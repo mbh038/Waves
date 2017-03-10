@@ -34,9 +34,9 @@ sum(table(reference$bin))
 maxSWH=max(reference$SWH)
 
 
-opfilepathstem<-"../data/synthetic/Wave1hr"
-opfilepathtail<-"_1hr.csv"
-colnames<-c("hour","h")
+opfilepathstem<-"../data/synthetic/wave/wave1hr_"
+opfilepathtail<-".csv"
+colnames<-c("hour","SWH")
 
 ndata<-24*365
 
@@ -56,6 +56,7 @@ for (file in 1:100){
     h=numeric(ndata)
     #randomly choose first wave height
     h[1]=floor((maxSWH*.99)*runif(1))+1
+    print(h[1])
     
     for (i in 2:ndata){
         colIndex=runif(1)
@@ -63,7 +64,7 @@ for (file in 1:100){
         while (cpm[round(h[i-1],0),j] < colIndex){
             j=j+1
         }
-        h[i]=j*0.25
+        h[i]=j
     }
     
     
