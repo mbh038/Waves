@@ -28,7 +28,7 @@ timeStamp<-dmy_hms(timeStamp)
 ## TPM
 reference<-data.frame(timeStamp,data$SWH,data$wavePeriod)
 colnames(reference)<-c("timeStamp","SWH","wavePeriod")
-
+#put SWH in bins, binwidth=0.25m
 reference$bin <- cut(reference$SWH, breaks = c(seq(0., ceiling(max(reference$SWH)), by = .25)), labels = 0:as.integer(ceiling(max(reference$SWH))/0.25-1))
 reference$bin <-as.integer(reference$bin)
 table(reference$bin)
