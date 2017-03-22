@@ -5,8 +5,10 @@
 library(dplyr)
 
 # get cpm matrix
-cpm<-read.table("../tpm/wave/wave_cpm.csv",sep=",")
-cpm
+cpmSWH<-read.table("../tpm/wave/wave_cpmSWH.csv",sep=",")
+cpmSWH
+cpmT<-read.table("../tpm/wave/wave_cpmT.csv",sep=",")
+cpmT
 
 
 ## read in tidy data
@@ -32,11 +34,13 @@ table(reference$bin)
 sum(table(reference$bin))
 
 maxSWH=max(reference$SWH)
+maxT=max(reference$wavePeriod)
+minT=min(reference$wavePeriod)
 
 
 opfilepathstem<-"../data/synthetic/wave/wave1hr_"
 opfilepathtail<-".csv"
-colnames<-c("hour","SWH")
+opColNames<-c("hour","SWH","WavePeriod")
 
 ndata<-24*365
 
@@ -54,22 +58,31 @@ for (file in 1:100){
 
     ## Stochastic generation of synthetic data
     h=numeric(ndata)
+    wp=numeric(ndata)
     #randomly choose first wave height
     h[1]=floor((maxSWH*.99)*runif(1))+1
-    print(h[1])
+    wp[1]=floor(minT+((maxT-minT)*.99)*runif(1))+1
+    print(h[1],wp[1])
     
     for (i in 2:ndata){
         colIndex=runif(1)
         j=1
-        while (cpm[round(h[i-1],0),j] < colIndex){
+        while (cpmSWH[round(h[i-1],0),j] < colIndex){
             j=j+1
         }
         h[i]=j
     }
+    for (i in 2:ndata){
+      colIndex=runif(1)
+      j=1
+      while (cpmT[round(wp[i-1],0),j] < colIndex){
+        j=j+1
+      }
+      wp[i]=j
+    }    
     
-    
-    summary(h)
-    summary(reference$bin)
+    # summary(h)
+    # summary(reference$bin)
     
     # v=v-1+runif(ndata)
     # mean(v)-mean(reference$V)
@@ -85,11 +98,14 @@ for (file in 1:100){
     # d = dweibull(seq(0,20,.2),vFit$estimate[1],vFit$estimate[2])
     # points(seq(0,20,.2),d,type='l',col=2)
     # 
+    mypar(2,1)
     plot(h[1:1000],type="l")
     lines(reference$SWH[1:1000],type="l",col="red")
+    plot(wp[1:1000],type="l")
+    lines(reference$wavePeriod[1:1000],type="l",col="red")
     
-    newdata<-data.frame(1:ndata,h)
-    names(newdata)<-colnames
+    newdata<-data.frame(1:ndata,h,wp)
+    names(newdata)<-opColNames
     write.csv(newdata,opfilename,row.names=FALSE)
     print(paste("File",opfilehandle,"done",sep=" "))
 
