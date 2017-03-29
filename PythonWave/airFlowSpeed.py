@@ -31,20 +31,39 @@ def airFlowSpeed(filename="wave1hr_001.csv"):
     print(period[:10])
     
     
-def wellsCoeffs(filename="../data/specs/wells_cd.csv"):
-    with open(filename,'r') as file:
+def wellsCoeffs():
+    
+    
+    CDfilename="../data/specs/wells_cd.csv"
+    
+    with open(CDfilename,'r') as file:
         data  = file.readlines() 
-    pairs=[[x for x in line.rstrip().split(',') ] for line in data]
-    print(float(pairs[2][0]))
+    pairs_cD=[[x for x in line.rstrip().split(',') ] for line in data]
+    print(float(pairs_cD[2][0]))
     
-    alpha=[float(pairs[x][0]) for x in range(1,len(pairs))]
-    cd=[float(pairs[x][1]) for x in range(1,len(pairs))]    
+    alpha_cD=[float(pairs_cD[x][0]) for x in range(1,len(pairs_cD))]
+    cD=[float(pairs_cD[x][1]) for x in range(1,len(pairs_cD))]    
     
-    print(alpha[:10])
-    print(cd[:10])
+    print(alpha_cD[:10])
+    print(cD[:10])
+
+
+    CLfilename="../data/specs/wells_cl.csv"
+    
+    with open(CLfilename,'r') as file:
+        data  = file.readlines() 
+    pairs_cL=[[x for x in line.rstrip().split(',') ] for line in data]
+    print(float(pairs_cL[2][0]))
+    
+    alpha_cL=[float(pairs_cL[x][0]) for x in range(1,len(pairs_cL))]
+    cL=[float(pairs_cL[x][1]) for x in range(1,len(pairs_cL))]    
+    
+    print(alpha_cL[:10])
+    print(cL[:10])
     
     plt.figure()
-    plt.plot(alpha[:],cd[:])
-#    plt.plot(x2[:],y2[:],'ro')
+    plt.plot(alpha_cL[:],cL[:],'b-',label='cL')
+    plt.plot(alpha_cD[:],cD[:],'r-',label='cD')
     plt.xlabel("Angle of attack")
-    plt.ylabel("Drag coefficient")
+    plt.ylabel("Drag coefficients")
+    plt.legend(loc='upper left')
