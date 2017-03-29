@@ -1,4 +1,4 @@
-## Wind Markov
+## Wave Markov
 
 # generates synthetic wind data, given a CPM
 
