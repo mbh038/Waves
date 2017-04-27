@@ -67,18 +67,23 @@ def wellsCoeffs():
     cl_interp=np.interp(alpha,alpha_cL,cL)
     cd_interp=np.interp(alpha,alpha_cD,cD)
     
-    plt.figure()
-#    plt.plot(alpha_cL[:],cL[:],'b-',label='cL')
+#    plt.figure()
 #    plt.plot(alpha[:],cl_interp[:],'g-',label='Linterp')
 #    plt.plot(alpha[:],cd_interp[:],'b-',label='Dinterp')
 #    plt.xlabel("Angle of attack")
 #    plt.ylabel("Drag coefficients")
 #    plt.legend(loc='upper left')
+#    
+#    plt.figure()
+#    plt.plot(cd_interp[:],cl_interp[:],'b-',label='cL')
+#    plt.xlabel("Drag coefficient cD")
+#    plt.ylabel("Lift coefficient cL")
+
     
     return alpha,cl_interp,cd_interp
     
 
-def ft():
+def Ft():
     
     alpha,cl,cd=wellsCoeffs()
     
@@ -91,17 +96,61 @@ def ft():
     for i in range(21):
         gamma[i]=1000
     
-    plt.figure()
-    plt.plot(alpha[21:],gamma[21:],'b-',label='gamma')
-
-    plt.xlabel("Angle of attack")
-    plt.ylabel("L/D ratio")
-    plt.legend(loc='upper left')  
+#    plt.figure()
+#    plt.plot(alpha[21:],gamma[21:],'b-',label='gamma')
+#
+#    plt.xlabel("Angle of attack")
+#    plt.ylabel("L/D ratio")
+#    plt.legend(loc='upper left')  
     
     ft=[cl[i]*(math.sin(alpharad[i])-math.cos(alpharad[i])/gamma[i]) for i in range(len(alpha))]
     
-    plt.figure()
-    plt.plot(alpha[:],ft[:],'b-',label='ft')
-    plt.xlabel("Angle of attack")
-    plt.ylabel("ft ")
-    plt.legend(loc='upper left')
+#    plt.figure()
+#    plt.plot(alpha[:],ft[:],'b-',label='ft')
+#    plt.xlabel("Angle of attack")
+#    plt.ylabel("ft ")
+#    plt.legend(loc='upper left')
+    
+    return gamma,alpharad,ft
+    
+def wtPower(omega,va,alphas,cls,cds):
+    
+    rmin=0.1
+    rmax=1.75
+    alphamin=math.atan(va/(omega*rmax))
+    alphamax=math.atan(va/(omega*rmin))
+#    print(alphamin,alphamax)
+    steps=100
+    dalpha=(alphamax-alphamin)/steps
+    
+    
+#    for i in range(len(gamma)):
+#        print (gamma[i],alpharad[i],ft[i])
+        
+    pTotal=0
+    for alpha in np.arange(alphamin,alphamax,dalpha):
+        cd=np.interp(alpha, alphas, cds)
+        cl=np.interp(alpha, alphas, cls)
+        gamma=cl/cd
+        dP=va*cl*(1-1/(gamma*math.tan(alpha)))
+        pTotal+=dP*dalpha
+    return pTotal
+     
+
+def wtTime(rpm):
+    
+    omega=(2*3.14/60)*rpm
+    
+    alphas,cls,cds=wellsCoeffs()
+    
+    va=10
+    p=wtPower(omega,va,alphas,cls,cds)
+    return p
+    
+    
+
+
+        
+    
+    
+    
