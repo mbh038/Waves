@@ -139,18 +139,67 @@ def wtPower(omega,va,alphas,cls,cds):
 
 def wtTime(rpm):
     
-    omega=(2*3.14/60)*rpm
+    wtOmega=(2*3.14/60)*rpm
     
     alphas,cls,cds=wellsCoeffs()
     
     va=10
-    p=wtPower(omega,va,alphas,cls,cds)
+    p=wtPower(wtOmega,va,alphas,cls,cds)
     return p
     
+#average power for given swh, period and rpm    
+def P(alphas,cls,cds,swh,T,d1,d2,rpm):
+    alphas,cls,cds=wellsCoeffs()
+    wtOmega=(2*3.14/60)*rpm
+    ts=[n*T/20 for n in range(20)]
+    omega=2*np.pi/T
+    psum=0
+    for t in ts:
+        vw=(swh/2)*omega*math.cos(omega*t)
+        va=abs(((d2/d1)**2)*vw)
+        psum+=wtPower(wtOmega,va,alphas,cls,cds)
+        psum/=20
+    return psum
     
+#time variation of Wells power output, given wave data
+def pWave(rpm,filename="../data/synthetic/wave/wave1hr_001.csv",d1=1,d2=1):
+    
+          
+    with open(filename,'r') as file:
+        data  = file.readlines() 
 
+    wd=[[x for x in line.rstrip().split(',') ] for line in data]
+    id=[int(wd[x][0]) for x in range(1,len(wd))]
+    swhBin=[int(wd[x][1]) for x in range(1,len(wd))]
+    periodBin=[int(wd[x][2]) for x in range(1,len(wd))]
+    
+#    print(id[:10])
+    print(swhBin[:10])
+    print(periodBin[:10])
+    
+    swhBinWidth= 0.25
+    periodBinWidth=0.5
+    
+    swh=[swhBinWidth*(x-1+rd.random()) for x in swhBin]
+    period=[periodBinWidth*(x-1+rd.random()) for x in periodBin] 
+    
+    alphas,cls,cds=wellsCoeffs()
+    power=[]
+    for i in range(0,len(swh)):#range(len(swh)):
+        power.append(P(alphas,cls,cds,swh[i],period[i],d1,d2,rpm))
+    
+#    plt.plot(swh)
+#    plt.plot(period)
+    
+    plt.plot(power)
+    
+    opfilename="../results/powerVsRpm/wave1hr_001"+"rpm"+str(rpm)+".csv"
 
-        
+    f = open(opfilename,'w')
+    for i in range(len(power)):
+        f.write(str(power[i])+'\n') #Give your csv text here.
+    ## Python will convert \n to os.linesep
+    f.close()    
     
     
     
