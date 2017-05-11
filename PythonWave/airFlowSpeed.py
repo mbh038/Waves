@@ -5,6 +5,7 @@ Created on Wed Mar 22 13:54:47 2017
 """
 
 import numpy as np
+import time
 import math
 import random as rd
 import matplotlib.pyplot as plt
@@ -164,7 +165,7 @@ def P(alphas,cls,cds,swh,T,d1,d2,rpm):
 #time variation of Wells power output, given wave data
 def pWave(rpm,filename="../data/synthetic/wave/wave1hr_001.csv",d1=1,d2=1):
     
-          
+    t=time.clock()     
     with open(filename,'r') as file:
         data  = file.readlines() 
 
@@ -174,8 +175,8 @@ def pWave(rpm,filename="../data/synthetic/wave/wave1hr_001.csv",d1=1,d2=1):
     periodBin=[int(wd[x][2]) for x in range(1,len(wd))]
     
 #    print(id[:10])
-    print(swhBin[:10])
-    print(periodBin[:10])
+#    print(swhBin[:10])
+#    print(periodBin[:10])
     
     swhBinWidth= 0.25
     periodBinWidth=0.5
@@ -199,7 +200,54 @@ def pWave(rpm,filename="../data/synthetic/wave/wave1hr_001.csv",d1=1,d2=1):
     for i in range(len(power)):
         f.write(str(power[i])+'\n') #Give your csv text here.
     ## Python will convert \n to os.linesep
-    f.close()    
+    f.close()  
     
+    print(time.clock()-t)
     
+    maxPower=max(power)
+    minPower=min(power)
+    meanPower=sum(power)/len(power)
+    
+    return minPower,maxPower,meanPower
+    
+def optimiseRpm():
+#    rpms=[x for x in range(50,550,50)]
+    rpms=[x for x in range(2,10,2)]
+    
+    minpower,maxpower,meanpower=[],[],[]
+    for rpm in rpms:
+        print("rpm=: ",rpm)
+        minp,maxp,meanp=pWave(rpm,filename="../data/synthetic/wave/wave1hr_001.csv",d1=1,d2=1)
+        minpower.append(minp)
+        maxpower.append(maxp)
+        meanpower.append(meanp)
+        
+        print("min:",minp,"max:",maxp,"mean:",meanp)
+        
+    
+    plt.plot(rpms,meanpower)    
+    return rpms,minpower,maxpower,meanpower
+    
+def wtTrials():
+     
+    rpm=200
+    fileNameStem="../data/synthetic/wave/wave1hr_"
+    fileNameTail=".csv"
+     
+     
+    for i in range (1,101):
+        if i<10:
+            filenum="00"+str(i)
+        if i>=10 and i<100:
+            filenum="0"+str(i)
+        if i==100:
+            filenum="100"
+         
+        fileName=fileNameStem+filenum+fileNameTail
+         
+        power=pWave(rpm,filename,d1=1,d2=1)
+         
+         
+             
+        
     
