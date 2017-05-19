@@ -188,25 +188,28 @@ def pWave(rpm,filename="../data/synthetic/wave/wave1hr_001.csv",d1=1,d2=1):
     power=[]
     for i in range(0,len(swh)):#range(len(swh)):
         power.append(P(alphas,cls,cds,swh[i],period[i],d1,d2,rpm))
+
     
 #    plt.plot(swh)
 #    plt.plot(period)
     
-    plt.plot(power)
+#    plt.plot(power)
     
-    opfilename="../results/powerVsRpm/wave1hr_001"+"rpm"+str(rpm)+".csv"
+#    opfilename="../results/powerVsRpm"+str(rpm)+"/wave1hr_001"+"rpm"+str(rpm)+".csv"
+#
+#    f = open(opfilename,'w')
+#    for i in range(len(power)):
+##        print(i,power[i])
+#        f.write(str(power[i])+'\n') #Give your csv text here.
+#    ## Python will convert \n to os.linesep
+#    f.close() 
 
-    f = open(opfilename,'w')
-    for i in range(len(power)):
-        f.write(str(power[i])+'\n') #Give your csv text here.
-    ## Python will convert \n to os.linesep
-    f.close()  
         
     maxPower=max(power)
     minPower=min(power)
     meanPower=sum(power)/len(power)
     
-    return minPower,maxPower,meanPower
+    return minPower,maxPower,meanPower,power
     
 def optimiseRpm():
 #    rpms=[x for x in range(50,550,50)]
@@ -261,30 +264,38 @@ def wtTrials(rpm=20):
         print("File"+fileNum+" being processed")
          
         waveFileName=waveFileNameStem+fileNum+waveFileNameTail
-         
-        power=pWave(rpm,waveFileName,d1=1,d2=1)
+        powerFileName="../results/powerVsYearRpm"+str(rpm)+"/wave1hr_"+fileNum+"rpm"+str(rpm)+".csv" 
+        minp,maxp,meanp,power=pWave(rpm,waveFileName,d1=1,d2=1)
+        
+        f = open(powerFileName,'w')
+        for j in range(len(power)):
+#        print(i,power[i])
+            f.write(str(power[j])+'\n') #Give your csv text here.
+    ## Python will convert \n to os.linesep
+        f.close() 
+
+        print(minp,maxp,meanp)
         
         plotPower(i,rpm)
         
-        powerFileName="../results/powerVsYearRpm"+str(rpm)+"/wave1hr_"+fileNum+"rpm"+str(rpm)+".csv"
-
-        f = open(powerFileName,'w')
-        for i in range(len(power)):
-            f.write(str(power[i])+'\n') 
-        f.close()
-        print ("File"+fileNum+" done")
+#        powerFileName="../results/powerVsYearRpm"+str(rpm)+"/wave1hr_"+fileNum+"rpm"+str(rpm)+".csv"
+#
+#        f = open(powerFileName,'w')
+#        for i in range(len(power)):
+#            f.write(str(power[i])+'\n') 
+#        f.close()
+#        print ("File"+fileNum+" done")
          
-def plotPower(fileId=1,rpm=200):
+def plotPower(fileId=1,rpm=20):
     
-    num=fileId
     if fileId<10:
-        fileNum="00"+str(num)
-    elif fileId>=10 and fileId<100:
-        fileNum="0"+str(num)
-    else: 
-        fileNum="100"    
+        fileNum="00"+str(fileId)
+    if fileId>=10 and fileId<100:
+        fileNum="0"+str(fileId)
+    if fileId>99:
+        fileNum="100"   
      
-    powerFileName="../results/powerVsRpm/wave1hr_"+fileNum+"rpm"+str(rpm)+".csv"
+    powerFileName="../results/powerVsYearRpm"+str(rpm)+"/wave1hr_"+fileNum+"rpm"+str(rpm)+".csv"
     waveFileName="../data/synthetic/wave/wave1hr_"+fileNum+".csv"
     with open(waveFileName,'r') as file:
         data  = file.readlines() 
