@@ -322,9 +322,9 @@ def plotPower(fileId=1,rpm=20):
     plt.plot(hours,power)
     plt.plot(hours,scaledSwh,'r-')
     
-def powerAnalysis(rpm=20):
+def powerAnalysisMeans(rpm=20):
     
-    opFileName="../results/powerVsYearRpm"+str(rpm)+"/wave1hr_rpm"+str(rpm)+"_powerSummary.csv"
+    opFileName="../results/powerVsYearRpm"+str(rpm)+"/wave1hr_rpm"+str(rpm)+"_powerMeanSummary.csv"
     fop = open(opFileName,"a+")
     for i in range (1,101):
         if i<10:
@@ -350,6 +350,33 @@ def powerAnalysis(rpm=20):
             fop.write(str(monthlyMeans[j])+',') #Give your csv text here. 
         fop.write("\n")
       
-             
+def powerAnalysisMaxs(rpm=20):
+    
+    opFileName="../results/powerVsYearRpm"+str(rpm)+"/wave1hr_rpm"+str(rpm)+"_powerMaxSummary.csv"
+    fop = open(opFileName,"a+")
+    for i in range (1,101):
+        if i<10:
+            fileNum="00"+str(i)
+        if i>=10 and i<100:
+            fileNum="0"+str(i)
+        if i==100:
+            fileNum="100"
+            
+        powerFileName="../results/powerVsYearRpm"+str(rpm)+"/wave1hr_"+fileNum+"rpm"+str(rpm)+".csv" 
+        with open(powerFileName,'r') as file:
+            data  = file.readlines()    
+        power=[float(line.rstrip()) for line in data]     
+        hpm=8760//12
+        monthlyMaxs=[]
+        for month in range(12):
+            powermax=0
+            for hour in range(hpm*month,hpm*(month+1)):
+                if power[hour]>powermax:
+                    powermax=power[hour]
+            monthlyMaxs.append(powermax)
+        for j in range(len(monthlyMaxs)):
+#        print(i,power[i])
+            fop.write(str(monthlyMaxs[j])+',') #Give your csv text here. 
+        fop.write("\n")            
         
     
