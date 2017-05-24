@@ -111,6 +111,9 @@ for (i in 1 : nrow(tpmT)){
 }
 print (cpmT)
 
+write.table(tpmSWH,"../tpm/wave/wave_tpmSWH.csv",sep=",",row.names=FALSE,col.names=FALSE)
+write.table(tpmT,"../tpm/wave/wave_tpmT.csv",sep=",",row.names=FALSE,col.names=FALSE)
+
 write.table(cpmSWH,"../tpm/wave/wave_cpmSWH.csv",sep=",",row.names=FALSE,col.names=FALSE)
 write.table(cpmT,"../tpm/wave/wave_cpmT.csv",sep=",",row.names=FALSE,col.names=FALSE)
 

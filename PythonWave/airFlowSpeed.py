@@ -5,6 +5,7 @@ Created on Wed Mar 22 13:54:47 2017
 """
 
 import numpy as np
+import csv
 import time
 import math
 import random as rd
@@ -33,7 +34,7 @@ def airFlowSpeed(filename="wave1hr_001.csv"):
     print(period[:10])
     
     
-def wellsCoeffs():
+def wellsCoeffs(plots=False,opFile=False):
     
     
     CDfilename="../data/specs/wells_cd.csv"
@@ -68,19 +69,28 @@ def wellsCoeffs():
     cl_interp=np.interp(alpha,alpha_cL,cL)
     cd_interp=np.interp(alpha,alpha_cD,cD)
     
-#    plt.figure()
-#    plt.plot(alpha[:],cl_interp[:],'g-',label='Linterp')
-#    plt.plot(alpha[:],cd_interp[:],'b-',label='Dinterp')
-#    plt.xlabel("Angle of attack")
-#    plt.ylabel("Drag coefficients")
-#    plt.legend(loc='upper left')
-#    
-#    plt.figure()
-#    plt.plot(cd_interp[:],cl_interp[:],'b-',label='cL')
-#    plt.xlabel("Drag coefficient cD")
-#    plt.ylabel("Lift coefficient cL")
-
+    lToDRatio=cl_interp/cd_interp
     
+    if plots:
+        plt.figure()
+        plt.plot(alpha[:],cl_interp[:],'g-',label='cL')
+        plt.plot(alpha[:],cd_interp[:],'b-',label='cD')
+        plt.xlabel("Angle of attack")
+        plt.ylabel("Drag coefficients")
+        plt.legend(loc='upper left')
+        
+        plt.figure()
+        plt.plot(alpha[:],lToDRatio[:],'b-',label='cL')
+        plt.xlabel("Angle of attack")
+        plt.ylabel("Lift to drag ratio")
+
+    if opFile:
+        with open('../data/specs/wellsCoeffs.csv', 'w', newline='') as csvfile:
+            wellsWriter = csv.writer(csvfile, delimiter=',')        
+            wellsWriter.writerow(["alpha","cL","cD","liftToDragRatio"])
+            for i in range(len(alpha)):
+                wellsWriter.writerow([alpha[i],cl_interp[i],cd_interp[i],lToDRatio[i]])
+        
     return alpha,cl_interp,cd_interp
     
 
